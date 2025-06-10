@@ -27,7 +27,7 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (true)
 {
     app.MapOpenApi();
 
@@ -35,7 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "BlogSystem API v1");
-        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+        c.RoutePrefix = string.Empty;
         c.DocumentTitle = "BlogSystem API Documentation";
         c.DefaultModelsExpandDepth(-1); // Hide schemas section by default
         c.DefaultModelRendering(Swashbuckle.AspNetCore.SwaggerUI.ModelRendering.Model);
