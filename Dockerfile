@@ -37,3 +37,5 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Run the application
 ENTRYPOINT ["dotnet", "BlogSystem.API.dll"]
+
+# docker run -d --name blog-container --env-file .env -p 5077:5077 -p 7077:7077 blog-api
