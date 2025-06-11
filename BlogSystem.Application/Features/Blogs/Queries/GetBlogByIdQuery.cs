@@ -1,4 +1,5 @@
 ﻿using BlogSystem.Application.DTOs;
+using BlogSystem.Application.Interfaces;
 using BlogSystem.Domain.Common;
 using BlogSystem.Domain.Exceptions;
 using BlogSystem.Domain.Repositories;
@@ -16,10 +17,12 @@ namespace BlogSystem.Application.Features.Blogs.Queries
     public class GetBlogByIdHandler : IRequestHandler<GetBlogByIdQuery, Result<BlogDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMappingService mappingService;
 
-        public GetBlogByIdHandler(IUnitOfWork unitOfWork)
+        public GetBlogByIdHandler(IUnitOfWork unitOfWork, IMappingService mappingService)
         {
             this._unitOfWork = unitOfWork;
+            this.mappingService = mappingService;
         }
 
         public async Task<Result<BlogDto>> Handle(GetBlogByIdQuery request, CancellationToken cancellationToken)

@@ -4,7 +4,7 @@ using BlogSystem.Domain.Entities;
 using BlogSystem.Domain.Repositories;
 using MediatR;
 
-namespace BlogSystem.Application.Features.Authors.Commands;
+namespace BlogSystem.Application.Features.Authors.Commands.CreateAuthorCommand;
 
 public record CreateAuthorCommand(CreateAuthorDto AuthorDto) : IRequest<Result<AuthorDto>>;
 
@@ -15,8 +15,8 @@ public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, R
 
     public CreateAuthorCommandHandler(IUnitOfWork unitOfWork, IMappingService mappingService)
     {
-        this._unitOfWork = unitOfWork;
-        this._mappingService = mappingService;
+        _unitOfWork = unitOfWork;
+        _mappingService = mappingService;
     }
 
     public async Task<Result<AuthorDto>> Handle(CreateAuthorCommand request, CancellationToken cancellationToken)

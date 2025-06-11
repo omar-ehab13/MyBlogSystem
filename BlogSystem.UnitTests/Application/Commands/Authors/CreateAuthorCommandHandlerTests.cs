@@ -1,5 +1,5 @@
 ﻿using BlogSystem.Application.Behaviors;
-using BlogSystem.Application.Features.Authors.Commands;
+using BlogSystem.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogSystem.Application.Interfaces;
 using BlogSystem.Domain.Common;
 using BlogSystem.Domain.Entities;
@@ -88,7 +88,7 @@ public class CreateAuthorCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ExistingEmail_ShouldThrowValidationException()
+    public async Task Handle_ExistingEmail_ShouldReturnFailureResult()
     {
         // Arrange
         var createAuthorDto = new CreateAuthorDto(

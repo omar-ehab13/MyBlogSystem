@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace BlogSystem.Application.Features.Authors.Commands;
+namespace BlogSystem.Application.Features.Authors.Commands.CreateAuthorCommand;
 
 public class CreateAuthorCommandValidator : AbstractValidator<CreateAuthorCommand>
 {
@@ -22,7 +22,7 @@ public class CreateAuthorCommandValidator : AbstractValidator<CreateAuthorComman
 
             RuleFor(command => command.AuthorDto.ImageUrl)
                 .MaximumLength(500).WithMessage("Image Url cannot exceed 500 characters.")
-                .Matches((@"^(https?://)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$"))
+                .Matches(@"^(https?://)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$")
                     .WithMessage("A valid URL is required for ImageUrl.")
                  .When(command => !string.IsNullOrEmpty(command.AuthorDto.ImageUrl));
                     

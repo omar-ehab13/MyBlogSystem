@@ -20,11 +20,28 @@ namespace BlogSystem.Application.Features.Authors.Queries
 
         public async Task<Result<IEnumerable<AuthorDto>>> Handle(GetAllAuthorsQuery request, CancellationToken cancellationToken)
         {
-            var authors = await _unitOfWork.AuthorRepository.GetAllAsync();
+            var authors = await _unitOfWork.AuthorRepository.GetAllAsync(cancellationToken);
 
-            var authorsDtos = authors.Select(a => _mappingService.Map<AuthorDto>(a)).ToList();
+            if (authors == null)
+                return Result<IEnumerable<AuthorDto>>.Failure(
+                    new List<string> { "Error: Author data retrieval returned null." },
+                    500, "Failed to retrieve author data.");
 
-            return Result<IEnumerable<AuthorDto>>.Success(authorsDtos);
+            // If no authors found, return an empty list with success status
+            if (!authors.Any())
+                return Result<IEnumerable<AuthorDto>>.Success(new List<AuthorDto>(),
+                    "No authors found", 200);
+
+            var authorDtos = _mappingService.Map<List<AuthorDto>>(authors);
+
+            // Mapping failed, which could happen if mapping profiles are misconfigured.
+            if (authorDtos == null)
+                return Result<IEnumerable<AuthorDto>>.Failure(
+                   new List<string> { "Error: Could not map authors to DTOs." },
+                   500, "Failed to process author data.");
+
+            return Result<IEnumerable<AuthorDto>>.Success(authorDtos,
+                "Authors retrieved successfully", 200);
         }
     }
 }

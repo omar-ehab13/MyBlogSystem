@@ -1,4 +1,4 @@
-﻿using BlogSystem.Application.Features.Authors.Commands;
+﻿using BlogSystem.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogSystem.Application.Features.Authors.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
