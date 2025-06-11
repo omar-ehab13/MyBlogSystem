@@ -2,8 +2,10 @@ using BlogSystem.API.Extensions;
 using BlogSystem.API.Middleware;
 using BlogSystem.Application;
 using BlogSystem.Infrastructure;
+using BlogSystem.Infrastructure.Data;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,5 +58,12 @@ app.UseCors("CorsPolicy");
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Auto migrate
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<BlogSystemDbContext>();
+    await context.Database.MigrateAsync();
+}
 
 app.Run();

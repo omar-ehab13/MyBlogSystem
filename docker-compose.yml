@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=P@ssw0rd123
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - blog-network
+
+  blog-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: blog-api
+    container_name: blog-api
+    depends_on:
+      - sqlserver
+    env_file:
+      - .env
+    ports:
+      - "5077:5077"
+      - "7077:7077"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=BlogDb;User Id=sa;Password=P@ssw0rd123;TrustServerCertificate=True;
+    networks:
+      - blog-network
+
+volumes:
+  sql_data:
+
+networks:
+  blog-network:
+    driver: bridge

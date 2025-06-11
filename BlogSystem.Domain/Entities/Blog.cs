@@ -18,10 +18,11 @@ public class Blog : BaseEntity
         AuthorId = authorId;
     }
 
-    public void Update(string title, string body)
+    public void Update(string? title = null, string? body = null, Guid? authorId = null)
     {
-        Title = title;
-        Body = body;
+        Title = title ?? Title;
+        Body = body ?? Body;
+        AuthorId = authorId ?? AuthorId;
         UpdatedAt = DateTime.UtcNow;
     }
 }

@@ -24,16 +24,19 @@ public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, R
         var authorExists = await _unitOfWork.AuthorRepository.EmailExistsAsync(request.AuthorDto.Email);
 
         if (authorExists)
-            throw new FluentValidation.ValidationException("Email is already exists");
+            return Result<AuthorDto>.Failure(new() { "Email: Author with this email already exists" },
+                409, "Author with this email already exists");
 
         var author = _mappingService.Map<Author>(request.AuthorDto);
-        await _unitOfWork.AuthorRepository.AddAsync(author);
+        var createdAuthor = await _unitOfWork.AuthorRepository.AddAsync(author);
 
-        await _unitOfWork.SaveChangesAsync();
+        if (await _unitOfWork.SaveChangesAsync() == 0)
+            return Result<AuthorDto>.Failure(
+                new() { "Error: could not retrieve created author afeter saving" },
+                500, "Failed to retrieve created author.");
 
-        var createdAuthor = await _unitOfWork.AuthorRepository.GetByEmailAsync(author.Email);
         var authorDto = _mappingService.Map<AuthorDto>(createdAuthor!);
 
-        return Result<AuthorDto>.Success(authorDto, "Created");
+        return Result<AuthorDto>.Success(authorDto, "Created", 201);
     }
 }
