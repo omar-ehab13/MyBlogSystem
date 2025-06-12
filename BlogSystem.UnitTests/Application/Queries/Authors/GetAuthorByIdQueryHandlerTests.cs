@@ -118,33 +118,4 @@ public class GetAuthorByIdQueryHandlerTests
         _mockMapper.Verify(x => x.Map<AuthorDto>(author), Times.Never);
     }
 
-
-    [Fact]
-    public async Task Handle_MappingFails_ShouldReturnFailureResult()
-    {
-        // Arrange
-        var query = CreateAuthorByIdQuery(Guid.NewGuid());
-
-        var author = CreateAuthor();
-
-        var authorDto = CreateTestAuthorDto(author);
-
-        SetupGetAuthorById(query.Id, author);
-        SetupMapAuthorToDto(author, null!);
-
-        // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Data.Should().BeNull();
-        result.Message.Should().Be("Mapping Error");
-        result.Errors.Should().ContainSingle().And.Contain("Mapping Erro: Cannot map from author to authorDto");
-        result.StatusCode.Should().Be(500);
-
-        // Verify interactions
-        _mockAuthorRepository.Verify(x => x.GetByIdAsync(query.Id, It.IsAny<CancellationToken>()), Times.Once());
-        _mockMapper.Verify(x => x.Map<AuthorDto>(author), Times.Once);
-    }
 }

@@ -21,19 +21,16 @@ public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, R
 
     public async Task<Result<AuthorDto>> Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
     {
-        var authorExists = await _unitOfWork.AuthorRepository.EmailExistsAsync(request.AuthorDto.Email);
+        var isEmailExists = await _unitOfWork.AuthorRepository.EmailExistsAsync(request.AuthorDto.Email);
 
-        if (authorExists)
+        if (isEmailExists)
             return Result<AuthorDto>.Failure(new() { "Email: Author with this email already exists" },
                 409, "Author with this email already exists");
 
         var author = _mappingService.Map<Author>(request.AuthorDto);
         var createdAuthor = await _unitOfWork.AuthorRepository.AddAsync(author);
 
-        if (await _unitOfWork.SaveChangesAsync() == 0)
-            return Result<AuthorDto>.Failure(
-                new() { "Error: could not retrieve created author afeter saving" },
-                500, "Failed to retrieve created author.");
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var authorDto = _mappingService.Map<AuthorDto>(createdAuthor!);
 

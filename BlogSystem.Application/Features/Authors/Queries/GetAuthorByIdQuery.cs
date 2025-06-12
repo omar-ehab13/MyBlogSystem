@@ -27,10 +27,6 @@ namespace BlogSystem.Application.Features.Authors.Queries
 
             var authorDto = _mappingService.Map<AuthorDto>(author);
 
-            if (authorDto is null)
-                return Result<AuthorDto>.Failure(new() { "Mapping Erro: Cannot map from author to authorDto" },
-                    500, "Mapping Error");
-
             return Result<AuthorDto>.Success(authorDto, "Author retrieved successfully");
         }
     }

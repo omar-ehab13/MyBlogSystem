@@ -36,17 +36,11 @@ public class DeleteAuthorCommandHandlerTests
         return new DeleteAuthorCommand(id ?? Guid.NewGuid());
     }
 
-    private Author CreateTestAuthor(Guid id, string name = "Test Author", string email = "test@example.com", string? imageUrl = null)
+    private Author CreateTestAuthor(string name = "Test Author", string email = "test@example.com", string? imageUrl = null)
     {
         var author = new Author(name, email, imageUrl);
 
         return author;
-    }
-
-    private void SetupAuthorExistsAsync(Guid id, bool result = false)
-    {
-        _mockAuthorRepository.Setup(x => x.ExistsAsync(id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
     }
 
     private void SetupGetByIdAsync(Guid id, Author? authorToReturn)
@@ -72,7 +66,9 @@ public class DeleteAuthorCommandHandlerTests
     {
         // Arrange
         var command = CreateDeleteCommand(Guid.NewGuid());
-        SetupAuthorExistsAsync(command.Id, true);
+        var author = CreateTestAuthor();
+
+        SetupGetByIdAsync(command.Id, null);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NotFoundException>(
@@ -80,50 +76,22 @@ public class DeleteAuthorCommandHandlerTests
         );
 
         exception.Should().NotBeNull();
+        exception.Should().BeOfType<NotFoundException>();
         exception.Message.Should().Be("The author already not found in DB");
 
         // Verify interactions
-        _mockAuthorRepository.Verify(x => x.ExistsAsync(command.Id, It.IsAny<CancellationToken>()), Times.Once);
-        _mockAuthorRepository.Verify(x => x.GetByIdAsync(command.Id, It.IsAny<CancellationToken>()), Times.Never);
+        _mockAuthorRepository.Verify(x => x.GetByIdAsync(command.Id, It.IsAny<CancellationToken>()), Times.Once);
         _mockAuthorRepository.Verify(x => x.DeleteAsync(It.IsAny<Author>(), It.IsAny<CancellationToken>()), Times.Never);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
 
     [Fact]
-    public async Task Handle_SaveChangesAsyncFails_ShouldReturnFailureResult()
-    {
-        // Arrange
-        var command = CreateDeleteCommand();
-        var existingAuthor = CreateTestAuthor(command.Id);
-
-        SetupGetByIdAsync(command.Id, existingAuthor);
-        SetupDelete(existingAuthor);
-        SetupSaveChangesAsync(0);
-
-        // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Message.Should().Be("Internal Server Error");
-        result.Errors.Should().ContainSingle().And.Contain("DB Error: Cannot deleting author from DB");
-        result.StatusCode.Should().Be(500);
-
-        // Verify interactions
-        _mockAuthorRepository.Verify(x => x.ExistsAsync(command.Id, It.IsAny<CancellationToken>()), Times.Once);
-        _mockAuthorRepository.Verify(x => x.GetByIdAsync(command.Id, It.IsAny<CancellationToken>()), Times.Once);
-        _mockAuthorRepository.Verify(x => x.DeleteAsync(It.IsAny<Author>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
     public async Task Handle_SuccessfulDeletion_ShouldReturnSuccessResult()
     {
         // Arrange
         var command = CreateDeleteCommand();
-        var existingAuthor = CreateTestAuthor(command.Id);
+        var existingAuthor = CreateTestAuthor();
 
         SetupGetByIdAsync(command.Id, existingAuthor);
         SetupDelete(existingAuthor);
@@ -140,7 +108,6 @@ public class DeleteAuthorCommandHandlerTests
         result.StatusCode.Should().Be(204);
 
         // Verify interactions
-        _mockAuthorRepository.Verify(x => x.ExistsAsync(command.Id, It.IsAny<CancellationToken>()), Times.Once);
         _mockAuthorRepository.Verify(x => x.GetByIdAsync(command.Id, It.IsAny<CancellationToken>()), Times.Once);
         _mockAuthorRepository.Verify(x => x.DeleteAsync(It.IsAny<Author>(), It.IsAny<CancellationToken>()), Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

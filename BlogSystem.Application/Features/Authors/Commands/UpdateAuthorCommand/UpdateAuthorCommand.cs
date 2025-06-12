@@ -41,9 +41,7 @@ public class UpdateAuthorCommandHandler : IRequestHandler<UpdateAuthorCommand, R
             imageUrl: request.AuthorDto.ImageUrl);
 
         // 4. Save in DB
-        if (await _unitOfWork.SaveChangesAsync() == 0)
-            return Result<AuthorDto>.Failure(new() { "Error: Cannot save updated author in DB" },
-                500, "Internal Server Error");
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // 5. Prepare AuthorDto to return with Result
         var authorDto = _mappingService.Map<AuthorDto>(author);

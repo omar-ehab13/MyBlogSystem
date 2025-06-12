@@ -102,52 +102,6 @@ public class UpdateAuthorCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_SaveChangesAsyncFails_ShouldReturnFailureResult()
-    {
-        #region Arrange
-        var updateAuthorDto = new UpdateAuthorDto(
-            Name: "Omar Ehab",
-            Email: "omar@gmail.com",
-            ImageUrl: "https://example.com/image.png");
-
-        var command = new UpdateAuthorCommand(Guid.NewGuid(), updateAuthorDto);
-        var targetAuthor = new Author(
-            name: command.AuthorDto.Name,
-            email: command.AuthorDto.Email,
-            imageUrl: command.AuthorDto.ImageUrl);
-
-        // Setups
-        // 1. setup authorRepo.GetById(id)
-        _mockAuthorRepository.Setup(x => x.GetByIdAsync(command.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(targetAuthor);
-
-        // 2. IsEmailExists
-        _mockAuthorRepository.Setup(x => x.EmailExistsAsync(command.AuthorDto.Email, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        // 3. UnitOfWork.SaveChangesAsync() fails
-        _mockUnitOfWork.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(0);
-        #endregion
-
-        #region Act
-        var result = await _handler.Handle(command, CancellationToken.None);
-        #endregion
-
-        #region Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Message.Should().Be("Internal Server Error");
-        result.Errors.Should().ContainSingle("Error: Cannot save updated author in DB");
-        result.StatusCode.Should().Be(500);
-
-        _mockAuthorRepository.Verify(x => x.GetByIdAsync(command.Id, CancellationToken.None), Times.Once());
-        _mockAuthorRepository.Verify(x => x.EmailExistsAsync(command.AuthorDto.Email, It.IsAny<CancellationToken>()), Times.Once);
-        _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        #endregion
-    }
-
-    [Fact]
     public async Task Handle_ValidCommand_ShouldReturnSuccessResult()
     {
         #region Arrange
