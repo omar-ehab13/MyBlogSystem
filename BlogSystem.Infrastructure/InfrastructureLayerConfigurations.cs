@@ -1,6 +1,7 @@
 ﻿using BlogSystem.Domain.Repositories;
 using BlogSystem.Infrastructure.Data;
 using BlogSystem.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

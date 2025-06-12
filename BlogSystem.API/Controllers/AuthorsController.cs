@@ -1,4 +1,6 @@
 ﻿using BlogSystem.Application.Features.Authors.Commands.CreateAuthorCommand;
+using BlogSystem.Application.Features.Authors.Commands.DeleteAuthorCommand;
+using BlogSystem.Application.Features.Authors.Commands.UpdateAuthorCommand;
 using BlogSystem.Application.Features.Authors.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -40,16 +42,20 @@ namespace BlogSystem.API.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        //// PUT api/<AuthorsController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAuthor(Guid id, [FromForm]UpdateAuthorDto authorDto, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new UpdateAuthorCommand(id, authorDto), cancellationToken);
 
-        //// DELETE api/<AuthorsController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAuthor(Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new DeleteAuthorCommand(id), cancellationToken);
+
+            return StatusCode(result.StatusCode, result);
+        }
     }
 }
