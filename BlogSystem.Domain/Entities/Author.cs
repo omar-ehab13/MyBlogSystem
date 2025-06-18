@@ -5,7 +5,7 @@ namespace BlogSystem.Domain.Entities;
 public class Author : BaseEntity
 {
     public string Name { get; private set; } = null!;
-    public string Email { get; private set; } = null!;
+    public string? Email { get; private set; }
     public string? ImageUrl { get; private set; }
     public List<Blog>? Blogs { get; set; } = new();
 

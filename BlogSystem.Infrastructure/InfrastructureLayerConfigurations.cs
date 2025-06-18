@@ -14,6 +14,8 @@ namespace BlogSystem.Infrastructure
         {
             services.AddDbContext<BlogSystemDbContext>(opt =>
                 opt.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<BlogSystemDbContext>(opt =>
+            //    opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
         }
 
         public static void RegisterRepositories(this IServiceCollection services)

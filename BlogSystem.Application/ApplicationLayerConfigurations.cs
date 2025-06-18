@@ -20,8 +20,13 @@ namespace BlogSystem.Application
 
         public static void ConfigureMediatR(this IServiceCollection services)
         {
-            services.AddMediatR(cfg =>
-            cfg.RegisterServicesFromAssemblies(typeof(ApplicationLayerConfigurations).Assembly));
+            services.AddMediatR(config => 
+            {
+                config.RegisterServicesFromAssemblies(typeof(ApplicationLayerConfigurations).Assembly);
+                //config.AddOpenBehavior(typeof(RequestLoggingPipelineBehavior<,>));
+
+            });
+
         }
 
         public static void ConfigureFluentValidation(this IServiceCollection services)

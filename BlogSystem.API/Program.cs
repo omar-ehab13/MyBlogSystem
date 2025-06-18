@@ -3,11 +3,15 @@ using BlogSystem.API.Middleware;
 using BlogSystem.Application;
 using BlogSystem.Infrastructure;
 using BlogSystem.Infrastructure.Data;
+using BlogSystem.Infrastructure.Logging;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog((context, loggerConfig) => 
+    loggerConfig.ReadFrom.Configuration(context.Configuration));
 
 // Application Layer Services
 builder.Services.ConfigureMappingService();
@@ -52,6 +56,10 @@ if (true)
 app.UseGlobalExceptionHandler();
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<RequestLogContextMiddleware>();
+
+app.UseSerilogRequestLogging();
 
 app.UseCors("CorsPolicy");
 
