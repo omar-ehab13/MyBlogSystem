@@ -31,9 +31,9 @@ WORKDIR /app
 # Copy the published output from the build stage
 
 COPY --from=build /app/publish .
-COPY ./aspnetapp.pfx /https/aspnetapp.pfx
+# COPY ./aspnetapp.pfx /https/aspnetapp.pfx
 
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+# ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Run the application
 ENTRYPOINT ["dotnet", "BlogSystem.API.dll"]
